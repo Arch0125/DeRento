@@ -1,9 +1,20 @@
 import Web3 from "web3"
 import { useState } from "react"
+import { useEffect } from "react";
+import SimpleStorageContract from '../client/src/contracts/SimpleStorage.json'
 
 const VendingMachine =() => {
     const[error,setError]=useState('');
     const[acc,setAcc]=useState('');
+    const[name,setName]=useState('');
+    const[desc,setDesc]=useState('');
+    const [price,setPrice]=useState('');
+    const[contract,setContract]=useState('');
+
+    useEffect(()=>{
+        connectWalletHandler()
+        loadContract()
+    },[])
 
     const connectWalletHandler = async() => {
         try{
@@ -21,6 +32,21 @@ const VendingMachine =() => {
         }
     }
 
+    const loadContract = async() =>{
+        const networkId = await web3.eth.net.getId();
+        const deployedNetwork = SimpleStorageContract.networks[networkId];
+        const instance = new web3.eth.Contract(
+            SimpleStorageContract.abi,
+            deployedNetwork && deployedNetwork.address,
+          );
+        setContract(instance)
+        console.log(networkId)
+    }
+
+    const CallContract = async() =>{
+        await contract.methods.set(5).send({ from: acc });
+    }    
+
     const AccountHandler = async() => {
         const account = await web3.eth.getAccounts()
         setAcc(account[0])
@@ -30,10 +56,12 @@ const VendingMachine =() => {
     return(
         <div>
             <h1>Vending Machine</h1>
-            <button onClick={connectWalletHandler} >Connect Wallet</button>
-            <label>{error}</label>
             <button onClick={AccountHandler} >Get Account</button>
             <p>{acc}</p>
+            <p>Enter Product name : <input type='text' onChange={(e)=>setName(e.target.value)} /></p>
+            <p>Enter Product Description : <input type='text' onChange={(e)=>setDesc(e.target.value)} /></p>
+            <p>Enter Rent : <input type='number' onChange={(e)=>setPrice(e.target.value)} /></p>
+            <button onClick={CallContract} >Put on Rent</button>
         </div>
         
     )
