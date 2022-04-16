@@ -16,6 +16,7 @@ const VendingMachine =() => {
         loadContract()
     },[])
 
+    //Connect Wallet
     const connectWalletHandler = async() => {
         try{
 
@@ -32,21 +33,24 @@ const VendingMachine =() => {
         }
     }
 
+    //Load contract
     const loadContract = async() =>{
         const networkId = await web3.eth.net.getId();
         const deployedNetwork = SimpleStorageContract.networks[networkId];
         const instance = new web3.eth.Contract(
             SimpleStorageContract.abi,
-            deployedNetwork && deployedNetwork.address,
+            "0x62B93Ff153Bed5b3e444B621991515C14fd13a21",
           );
         setContract(instance)
         console.log(networkId)
     }
 
+    //Call contract
     const CallContract = async() =>{
         await contract.methods.set(5).send({ from: acc });
     }    
 
+    //Get account details
     const AccountHandler = async() => {
         const account = await web3.eth.getAccounts()
         setAcc(account[0])
