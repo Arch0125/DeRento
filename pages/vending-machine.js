@@ -10,6 +10,7 @@ const VendingMachine =() => {
     const[desc,setDesc]=useState('');
     const [price,setPrice]=useState('');
     const[contract,setContract]=useState('');
+    const[result,setResult]=useState('');
 
     useEffect(()=>{
         connectWalletHandler()
@@ -48,6 +49,9 @@ const VendingMachine =() => {
     //Call contract
     const CallContract = async() =>{
         await contract.methods.set(5).send({ from: acc });
+        const response = await contract.methods.get().call();
+        setResult(response)
+
     }    
 
     //Get account details
@@ -66,6 +70,7 @@ const VendingMachine =() => {
             <p>Enter Product Description : <input type='text' onChange={(e)=>setDesc(e.target.value)} /></p>
             <p>Enter Rent : <input type='number' onChange={(e)=>setPrice(e.target.value)} /></p>
             <button onClick={CallContract} >Put on Rent</button>
+            <p>Current Value : {result}</p>
         </div>
         
     )
