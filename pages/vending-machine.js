@@ -39,7 +39,7 @@ const VendingMachine =() => {
         const deployedNetwork = SimpleStorageContract.networks[networkId];
         const instance = new web3.eth.Contract(
             SimpleStorageContract.abi,
-            "0x62B93Ff153Bed5b3e444B621991515C14fd13a21",
+            deployedNetwork && deployedNetwork.address,
           );
         setContract(instance)
         console.log(networkId)
