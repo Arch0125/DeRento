@@ -9,9 +9,10 @@ const VendingMachine =() => {
     const[acc,setAcc]=useState('');
     const[name,setName]=useState('');
     const[desc,setDesc]=useState('');
-    const [price,setPrice]=useState('');
+    const[dur,setDur]=useState(0);
+    const[price,setPrice]=useState('');
     const[contract,setContract]=useState('');
-    const[result,setResult]=useState('');
+    const[arrlen,setArrlen]=useState(0);
 
     useEffect(()=>{
         connectWalletHandler()
@@ -50,10 +51,7 @@ const VendingMachine =() => {
 
     //Call contract
     const CallContract = async() =>{
-        await contract.methods.createProduct(name,price).send({ from: acc });
-        const rentlist = await contract.methods.getProducts().call();
-        const arrlength = await contract.methods.arraylength().call();
-        console.log(arrlength);
+        await contract.methods.createProduct(name,desc,dur,price).send({ from: acc });
     }    
 
     //Get account details
@@ -64,19 +62,25 @@ const VendingMachine =() => {
     }
 
     const displayProducts = async() =>{
-        
+        const arrlength = await contract.methods.arraylength().call();
+        setArrlen(arrlength)
+        for(let i=1;i<=arrlen;i++){
+            const rentlist = await contract.methods.getProducts(i).call();
+            console.log(rentlist)
+        }
     }
 
     return(
         <div>
             <h1>DeRento</h1>
             <button onClick={AccountHandler} >Get Account</button>
-            <p>{acc}</p>
+            <p>Connected Account : {acc}</p>
             <p>Enter Product name : <input type='text' onChange={(e)=>setName(e.target.value)} /></p>
             <p>Enter Product Description : <input type='text' onChange={(e)=>setDesc(e.target.value)} /></p>
+            <p>Enter Duration : <input type='number' onChange={(e)=>setDur(e.target.value)} /></p>
             <p>Enter Rent : <input type='number' onChange={(e)=>setPrice(e.target.value)} /></p>
             <button onClick={CallContract} >Put on Rent</button>
-            <p>Current Value : {result}</p>
+            <button onClick={displayProducts}>Display Products</button>
         </div>
         
     )
