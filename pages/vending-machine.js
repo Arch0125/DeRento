@@ -2,6 +2,7 @@ import Web3 from "web3"
 import { useState } from "react"
 import { useEffect } from "react";
 import SimpleStorageContract from '../client/src/contracts/SimpleStorage.json'
+import RentingContract from '../client/src/contracts/Renting.json'
 
 const VendingMachine =() => {
     const[error,setError]=useState('');
@@ -15,6 +16,7 @@ const VendingMachine =() => {
     useEffect(()=>{
         connectWalletHandler()
         loadContract()
+        AccountHandler()
     },[])
 
     //Connect Wallet
@@ -37,21 +39,21 @@ const VendingMachine =() => {
     //Load contract
     const loadContract = async() =>{
         const networkId = await web3.eth.net.getId();
-        const deployedNetwork = SimpleStorageContract.networks[networkId];
+        const deployedNetwork = RentingContract.networks[networkId];
         const instance = new web3.eth.Contract(
-            SimpleStorageContract.abi,
+            RentingContract.abi,
             deployedNetwork && deployedNetwork.address,
           );
         setContract(instance)
-        console.log(networkId)
+        console.log(deployedNetwork)
     }
 
     //Call contract
     const CallContract = async() =>{
-        await contract.methods.set(5).send({ from: acc });
-        const response = await contract.methods.get().call();
-        setResult(response)
-
+        await contract.methods.createProduct(name,price).send({ from: acc });
+        const rentlist = await contract.methods.getProducts().call();
+        const arrlength = await contract.methods.arraylength().call();
+        console.log(arrlength);
     }    
 
     //Get account details
@@ -61,9 +63,13 @@ const VendingMachine =() => {
         console.log(account[0])
     }
 
+    const displayProducts = async() =>{
+        
+    }
+
     return(
         <div>
-            <h1>Vending Machine</h1>
+            <h1>DeRento</h1>
             <button onClick={AccountHandler} >Get Account</button>
             <p>{acc}</p>
             <p>Enter Product name : <input type='text' onChange={(e)=>setName(e.target.value)} /></p>
